@@ -1,6 +1,9 @@
-import { InputType } from "@nestjs/graphql";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType()
-export class ContactInput {
+export class ContactInput {    
+
+    @Field()
+    phoneNumber: string;
 
 }
