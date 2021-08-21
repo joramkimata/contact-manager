@@ -5,9 +5,9 @@ import { Role } from "./role.entity";
 
 @Entity('cm_users')
 @ObjectType()
-export class User extends BaseEntity{
+export class User extends BaseEntity {
 
-    @Column({name: 'full_name'})
+    @Column({ name: 'full_name' })
     @Field()
     fullName: string;
 
@@ -18,7 +18,10 @@ export class User extends BaseEntity{
     @Column()
     password: string;
 
-    @Field(type => [Role])
+    @Column({ default: false })
+    active: boolean = false;
+
+    @Field(type => [Role], { nullable: true })
     @ManyToMany(type => Role,)
     @JoinTable({
         name: 'cm_user_roles',
@@ -27,5 +30,5 @@ export class User extends BaseEntity{
     })
     roles: Role[];
 
-    
+
 }

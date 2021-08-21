@@ -14,5 +14,5 @@ export class UserInput {
 
     @Field()
     confirmPassword: string;
-
+    
 }
