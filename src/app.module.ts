@@ -4,9 +4,13 @@ import { UserModuleModule } from './user-module/user-module.module';
 import { ContactModuleModule } from './contact-module/contact-module.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SharedModuleModule } from './shared-module/shared-module.module';
+import { GraphQLModule } from '@nestjs/graphql';
 
 @Module({
   imports: [
+    GraphQLModule.forRoot({
+      autoSchemaFile: true,
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
