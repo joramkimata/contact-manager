@@ -21,9 +21,9 @@ export class ContactResolver {
     @Mutation(returns => Contact)
     updateContact(
         @Args('uuid') uuid: string,
-        @Args('createContactInput') createContactInput: ContactInput
+        @Args('updateContactInput') updateContactInput: ContactInput
     ) {
-        return this.contactService.updateContact(uuid, createContactInput);
+        return this.contactService.updateContact(uuid, updateContactInput);
     }
 
     @Mutation(returns => Contact)

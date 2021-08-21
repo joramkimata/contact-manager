@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { GraphQLError } from "graphql";
 import { Not, Repository } from "typeorm";
 import { Contact } from "../entities/contact.entity";
 import { ContactInput } from "../inputs/contact.input";
@@ -20,7 +21,7 @@ export class ContactService {
         });
 
         if(!contact) {
-            return new BadRequestException(`Contact not found`);
+            return new GraphQLError(`Contact not found`);
         }
 
         contact.isPublic = true;
@@ -59,7 +60,7 @@ export class ContactService {
         });
 
         if (!dbContact) {
-            return new BadRequestException(`Contact not found`);
+            return new GraphQLError(`Contact not found`);
         }
 
         dbContact.deleted = true;
@@ -76,7 +77,7 @@ export class ContactService {
         });
 
         if (!dbContact) {
-            return new BadRequestException(`Contact not found`);
+            return new GraphQLError(`Contact not found`);
         }
 
         const contact = await this.contactRepository.findOne({
@@ -86,7 +87,7 @@ export class ContactService {
         });
 
         if (contact) {
-            return new BadRequestException(`Contact exists`);
+            return new GraphQLError(`Contact exists`);
         }
 
         dbContact.phoneNumber = phoneNumber;
@@ -103,7 +104,7 @@ export class ContactService {
         });
 
         if (contact) {
-            return new BadRequestException(`Contact exists`);
+            return new GraphQLError(`Contact exists`);
         }
 
         const newContact = new Contact();
