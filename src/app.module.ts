@@ -10,6 +10,11 @@ import { GraphQLModule } from '@nestjs/graphql';
   imports: [
     GraphQLModule.forRoot({
       autoSchemaFile: true,
+      context: ({ req }) => {
+        return {
+          req,
+        };
+      },
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',

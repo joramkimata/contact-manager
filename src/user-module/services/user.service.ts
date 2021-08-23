@@ -11,12 +11,27 @@ import { AssignRolesInput } from "../inputs/assign-roles.input";
 
 @Injectable()
 export class UserService {
-
-
+    
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>
     ) { }
+
+    
+
+    async getUserPermissions(username: string): Promise<string[]> {
+        const query = `SELECT pm.name  FROM cm_users u
+        INNER JOIN  cm_user_roles ru ON ru.user_id=u.id
+        INNER JOIN cm_role_permissions pr ON pr.role_id=ru.role_id
+        INNER JOIN cm_permissions pm ON pm.id=pr.permission_id
+        WHERE u.username='${username}' GROUP BY pm.name,u.username`;
+
+        const perms = await this.userRepository.query(query);
+
+        const permsArray = perms.map((p) => p.name);
+
+        return permsArray;
+    }
 
     assignRoles(assignRolesInput: AssignRolesInput) {
         throw new Error("Method not implemented.");
@@ -38,6 +53,25 @@ export class UserService {
     }
     updateUser(fullName: string, username: string) {
         throw new Error("Method not implemented.");
+    }
+
+    async seedAdmin() {
+        const user = await this.userRepository.findOne({
+            where: {
+                username: 'admin',
+                deleted: false
+            }
+        });
+
+        if (!user) {
+            const admin = new User();
+            admin.fullName = "Joe Doe";
+            admin.username = "admin";
+            admin.password = bcrypt.hashSync('admin.2021', 10);
+            admin.active = true;
+
+            await this.userRepository.save(admin);
+        }
     }
 
     async createUser(createUserInput: UserInput) {
