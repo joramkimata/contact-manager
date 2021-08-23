@@ -5,6 +5,7 @@ import { LoginDto } from "../dto/login.dto";
 import { AuthService } from "../services/auth.service";
 
 export class JwtPayload {
+    userId: number;
     username: string;
     password: string;
 }
@@ -24,13 +25,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: JwtPayload) {
-        const { username, password } = payload;
 
-        const loginDto = new LoginDto();
-        loginDto.username = username;
-        loginDto.password = password;
+        const { userId } = payload;
 
-        const user = await this.authService.login(loginDto);
+        const user = await this.authService.getUserFromId(userId);
 
         if (!user) {
             throw new UnauthorizedException('Invalid User');

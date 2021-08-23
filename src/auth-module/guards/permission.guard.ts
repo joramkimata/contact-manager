@@ -23,8 +23,11 @@ export class PermissionGuard implements CanActivate {
         const ctx = GqlExecutionContext.create(context);
         const { req } = ctx.getContext();
 
+        
+
         const user: User = req.user;
 
+    
         if (!user) {
             throw new UnauthorizedException('Invalid User');
         }

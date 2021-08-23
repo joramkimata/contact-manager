@@ -8,6 +8,7 @@ import { UserInput } from "../inputs/user.input";
 import * as bcrypt from 'bcrypt';
 import { AssignRolesInput } from "../inputs/assign-roles.input";
 import { Role } from "../entities/role.entity";
+import { Permission } from "../entities/permission.entity";
 
 
 
@@ -19,6 +20,8 @@ export class UserService {
         private userRepository: Repository<User>,
         @InjectRepository(Role)
         private roleRepository: Repository<Role>,
+        @InjectRepository(Permission)
+        private permissionRepository: Repository<Permission>,
     ) { }
 
 
@@ -89,23 +92,68 @@ export class UserService {
     }
 
     getUser(uuid: string) {
-        throw new Error("Method not implemented.");
+        return this.userRepository.findOne({
+            where: {
+                deleted: false,
+                uuid
+            },
+            relations: ['roles']
+        });
     }
 
-    deleteUser(uuid: string) {
-        throw new Error("Method not implemented.");
+    async deleteUser(uuid: string) {
+        const user = await this.userRepository.findOne({
+            where: {
+                deleted: false,
+                uuid
+            },
+            relations: ['roles']
+        });
+
+        if(!user) {
+            throw new GraphQLError(`User not found`);
+        }
+
+        user.deleted = true;
+        return this.userRepository.save(user);
     }
 
-    blockUser(uuid: string) {
-        throw new Error("Method not implemented.");
+    async blockUser(uuid: string) {
+        const user = await this.userRepository.findOne({
+            where: {
+                deleted: false,
+                uuid
+            },
+            relations: ['roles']
+        });
+
+        if (!user) {
+            throw new GraphQLError(`User not found`);
+        }
+
+        user.active = false;
+        return this.userRepository.save(user);
     }
 
-    activateUser(uuid: string) {
-        throw new Error("Method not implemented.");
+    async activateUser(uuid: string) {
+        const user = await this.userRepository.findOne({
+            where: {
+                deleted: false,
+                uuid
+            },
+            relations: ['roles']
+        });
+
+        if (!user) {
+            throw new GraphQLError(`User not found`);
+        }
+
+        user.active = true;
+        return this.userRepository.save(user);
     }
 
     updateUser(fullName: string, username: string) {
-        throw new Error("Method not implemented.");
+        
     }
 
     async seedAdmin() {
@@ -123,7 +171,33 @@ export class UserService {
             admin.password = bcrypt.hashSync('admin.2021', 10);
             admin.active = true;
 
-            await this.userRepository.save(admin);
+            const savedAdmin = await this.userRepository.save(admin);
+
+            const role = await this.roleRepository.findOne({
+                name: 'ADMIN',
+                deleted: false
+            });
+
+            if(!role) { 
+                const newRole = new Role();
+                newRole.name = 'ADMIN';
+                newRole.displayName = "Administrator";
+                newRole.description = "Administrator";
+                const savedRole = await this.roleRepository.save(newRole);
+
+                const permissions = await this.permissionRepository.find({
+                    deleted: false
+                });
+
+                if(permissions) {
+                    savedRole.permissions = permissions;
+                    const newlysavedRole = await this.roleRepository.save(savedRole);
+
+                    savedAdmin.roles = [newlysavedRole];
+
+                    await this.userRepository.save(savedAdmin);
+                }
+            }
         }
     }
 

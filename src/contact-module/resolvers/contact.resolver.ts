@@ -13,7 +13,6 @@ import { GqlAuthGuard } from "src/auth-module/guards/gql-auth.guard";
 
 
 @Resolver(of => Contact)
-@UseGuards(GqlAuthGuard)
 export class ContactResolver {
 
     constructor(
@@ -26,7 +25,7 @@ export class ContactResolver {
         displayName: 'Can view contacts',
         groupName: GroupName.CONTACTS
     })
-    @UseGuards(PermissionGuard)
+    @UseGuards(GqlAuthGuard,PermissionGuard)
     @HasPermission({
         name: 'ROLE_CREATE_CONTACTS',
         displayName: 'Can create contacts',
@@ -50,7 +49,7 @@ export class ContactResolver {
         displayName: 'Can view contacts',
         groupName: GroupName.CONTACTS
     })
-    @UseGuards(PermissionGuard)
+    @UseGuards(GqlAuthGuard,PermissionGuard)
     @Mutation(returns => Contact)
     updateContact(
         @Args('uuid') uuid: string,
@@ -70,7 +69,7 @@ export class ContactResolver {
         displayName: 'Can view contacts',
         groupName: GroupName.CONTACTS
     })
-    @UseGuards(PermissionGuard)
+    @UseGuards(GqlAuthGuard,PermissionGuard)
     @Mutation(returns => Contact)
     deleteContact(
         @Args('uuid') uuid: string,
@@ -89,7 +88,7 @@ export class ContactResolver {
         displayName: 'Can view contacts',
         groupName: GroupName.CONTACTS
     })
-    @UseGuards(PermissionGuard)
+    @UseGuards(GqlAuthGuard,PermissionGuard)
     @Mutation(returns => Contact)
     makeContactPublic(
         @Args('uuid') uuid: string,
@@ -110,7 +109,7 @@ export class ContactResolver {
         displayName: 'Can view contacts',
         groupName: GroupName.CONTACTS
     })
-    @UseGuards(PermissionGuard)
+    @UseGuards(GqlAuthGuard,PermissionGuard)
     @Query(returns => [Contact])
     getMyContacts(
         @GetCurrentUser() user: User
@@ -128,7 +127,7 @@ export class ContactResolver {
         displayName: 'Can view contacts',
         groupName: GroupName.CONTACTS
     })
-    @UseGuards(PermissionGuard)
+    @UseGuards(GqlAuthGuard,PermissionGuard)
     @Query(returns => [Contact])
     getAllContacts() {
         return this.contactService.getAllContacts();
@@ -149,7 +148,7 @@ export class ContactResolver {
         displayName: 'Can view contacts',
         groupName: GroupName.CONTACTS
     })
-    @UseGuards(PermissionGuard)
+    @UseGuards(GqlAuthGuard,PermissionGuard)
     @Query(returns => Contact, {nullable: true})
     getOneContract(
         @Args('uuid') uuid: string,

@@ -40,14 +40,20 @@ export class RoleService {
 
     getRoles() {
         return this.roleRepository.find({
-            deleted: false,
+            where: {
+                deleted: false,
+            },
+            relations: ['permissions']
         });
     }
 
     getRole(uuid: string) {
         return this.roleRepository.findOne({
-            uuid,
-            deleted: false,
+            where: {
+                uuid,
+                deleted: false,
+            },
+            relations: ['permissions']
         });
     }
 

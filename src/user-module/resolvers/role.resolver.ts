@@ -1,5 +1,6 @@
 import { UseGuards } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { GqlAuthGuard } from "src/auth-module/guards/gql-auth.guard";
 import { PermissionGuard } from "src/auth-module/guards/permission.guard";
 import { GroupName, HasPermission } from "../decorators/has-permission.decorator";
 import { Role } from "../entities/role.entity";
@@ -15,12 +16,12 @@ import { RoleService } from "../services/role.service";
     groupName: GroupName.UAA,
     description: 'Can View Roles'
 })
-@UseGuards(PermissionGuard)
+@UseGuards(GqlAuthGuard, PermissionGuard)
 export class RoleResolver {
 
     constructor(
         private roleService: RoleService
-    ) {}
+    ) { }
 
     @HasPermission({
         name: 'ROLE_CREATE_ROLES',

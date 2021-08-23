@@ -32,6 +32,15 @@ export class AuthService {
         return permsArray;
     }
 
+    async getUserFromId(userId: number) {
+        const user = await this.userRepository.findOne({
+            id: userId,
+            deleted: false
+        });
+
+        return user;
+    }
+
     async login(login: LoginDto) {
         const user = await this.userRepository.findOne({
             username: login.username,
@@ -43,8 +52,12 @@ export class AuthService {
             return new UnauthorizedException(`Invalid user found`);
         }
 
-        if (!bcrypt.compareSync(login.password, user.password) && user.active) {
+        if (!bcrypt.compareSync(login.password, user.password)) {
             return new UnauthorizedException(`Invalid user found`);
+        }
+
+        if(user.active != true) {
+            return new UnauthorizedException(`User is inactive`);
         }
 
         const token = await this.jwtService.signAsync({

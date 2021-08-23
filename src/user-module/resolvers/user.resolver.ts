@@ -10,14 +10,13 @@ import { UserService } from "../services/user.service";
 
 
 @Resolver(of => User)
-// @HasPermission({
-//     name: 'ROLE_VIEW_USERS',
-//     displayName: 'Can View Users',
-//     groupName: GroupName.UAA,
-//     description: 'Can View Users'
-// })
-// @UseGuards(PermissionGuard)
-@UseGuards(GqlAuthGuard)
+@HasPermission({
+    name: 'ROLE_VIEW_USERS',
+    displayName: 'Can View Users',
+    groupName: GroupName.UAA,
+    description: 'Can View Users'
+})
+@UseGuards(GqlAuthGuard, PermissionGuard)
 export class UserResolver {
 
     constructor(

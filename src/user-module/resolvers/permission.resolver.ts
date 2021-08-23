@@ -1,5 +1,6 @@
 import { UseGuards } from "@nestjs/common";
 import { Args, Query, Resolver } from "@nestjs/graphql";
+import { GqlAuthGuard } from "src/auth-module/guards/gql-auth.guard";
 import { PermissionGuard } from "src/auth-module/guards/permission.guard";
 import { GroupName, HasPermission } from "../decorators/has-permission.decorator";
 import { Permission } from "../entities/permission.entity";
@@ -12,7 +13,7 @@ import { PermissionService } from "../services/permission.service";
     groupName: GroupName.UAA,
     description: 'Can View Permissions'
 })
-@UseGuards(PermissionGuard)
+@UseGuards(GqlAuthGuard, PermissionGuard)
 export class PermissionResolver {
 
     constructor(
