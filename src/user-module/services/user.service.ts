@@ -7,50 +7,103 @@ import { UserInput } from "../inputs/user.input";
 
 import * as bcrypt from 'bcrypt';
 import { AssignRolesInput } from "../inputs/assign-roles.input";
+import { Role } from "../entities/role.entity";
+
 
 
 @Injectable()
 export class UserService {
-    
+
     constructor(
         @InjectRepository(User)
-        private userRepository: Repository<User>
+        private userRepository: Repository<User>,
+        @InjectRepository(Role)
+        private roleRepository: Repository<Role>,
     ) { }
 
-    
 
-    async getUserPermissions(username: string): Promise<string[]> {
-        const query = `SELECT pm.name  FROM cm_users u
-        INNER JOIN  cm_user_roles ru ON ru.user_id=u.id
-        INNER JOIN cm_role_permissions pr ON pr.role_id=ru.role_id
-        INNER JOIN cm_permissions pm ON pm.id=pr.permission_id
-        WHERE u.username='${username}' GROUP BY pm.name,u.username`;
+    async assignRoles(assignRolesInput: AssignRolesInput) {
+        const { roleUUIDs, userUUID: uuid } = assignRolesInput;
 
-        const perms = await this.userRepository.query(query);
+        const user = await this.userRepository.findOne({
+            uuid,
+            deleted: false
+        });
 
-        const permsArray = perms.map((p) => p.name);
+        if (!user) {
+            throw new GraphQLError('User not found');
+        }
+        let roles: Role[] = [];
+        try {
+            roles = await this.validateRoles(roleUUIDs);
+            
+        } catch (err) {
+            throw new GraphQLError(`${err}`);
+        }
 
-        return permsArray;
+        if (roles.length > 0) {
+            // delete assigned roles
+            await this.deleteUserRoles(user.id);
+
+            // re-populate new ones
+            user.roles = roles;
+        }
+
+
+        return this.userRepository.save(user);
     }
 
-    assignRoles(assignRolesInput: AssignRolesInput) {
-        throw new Error("Method not implemented.");
+    deleteUserRoles(id: number) {
+        return this.userRepository.query(`delete from cm_user_roles where user_id=${id}`);
     }
+
+    validateRoles(roleUUIDs: string[]) {
+        const promise: Promise<Role[]> = new Promise(async (resolve, reject) => {
+            const roles = roleUUIDs.map(async ruuid => {
+                const role = await this.roleRepository.findOne({
+                    uuid: ruuid,
+                    deleted: false,
+                });
+                if (!role) {
+                    reject(`Role: ${ruuid} not found`);
+                }
+
+                return role;
+            });
+
+            const mroles = await Promise.all(roles);
+
+            resolve(mroles);
+        });
+
+        return promise;
+    }
+
     getUsers() {
-        throw new Error("Method not implemented.");
+        return this.userRepository.find({
+            where: {
+                deleted: false
+            },
+            relations: ['roles']
+        });
     }
+
     getUser(uuid: string) {
         throw new Error("Method not implemented.");
     }
+
     deleteUser(uuid: string) {
         throw new Error("Method not implemented.");
     }
+
     blockUser(uuid: string) {
         throw new Error("Method not implemented.");
     }
+
     activateUser(uuid: string) {
         throw new Error("Method not implemented.");
     }
+
     updateUser(fullName: string, username: string) {
         throw new Error("Method not implemented.");
     }

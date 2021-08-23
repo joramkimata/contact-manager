@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { GraphQLError } from "graphql";
+import { User } from "src/user-module/entities/user.entity";
 import { Not, Repository } from "typeorm";
 import { Contact } from "../entities/contact.entity";
 import { ContactInput } from "../inputs/contact.input";
@@ -14,10 +15,11 @@ export class ContactService {
         private contactRepository: Repository<Contact>,
     ) { }
 
-    async makeContactPublic(uuid: string) {
+    async makeContactPublic(uuid: string, user: User) {
         const contact = await this.contactRepository.findOne({
             uuid,
-            deleted: false
+            deleted: false,
+            user
         });
 
         if(!contact) {
@@ -25,15 +27,17 @@ export class ContactService {
         }
 
         contact.isPublic = true;
+        contact.user = user;
         const savedContact = await this.contactRepository.save(contact);
         return savedContact;
     }
 
 
-    getOneContract(uuid: string) {
+    getOneContract(uuid: string, user: User) {
        return this.contactRepository.findOne({
             uuid,
-            deleted: false
+            deleted: false,
+            user
        }); 
     }
 
@@ -49,14 +53,18 @@ export class ContactService {
             deleted: false
         });
     }
-    getMyContacts() {
-        throw new Error("Method not implemented.");
+    getMyContacts(user: User) {
+        return this.contactRepository.find({
+            deleted: false,
+            user
+        });
     }
 
-    async deleteContact(uuid: string) {
+    async deleteContact(uuid: string, user: User) {
         const dbContact = await this.contactRepository.findOne({
             uuid,
-            deleted: false
+            deleted: false,
+            user
         });
 
         if (!dbContact) {
@@ -64,16 +72,18 @@ export class ContactService {
         }
 
         dbContact.deleted = true;
+        dbContact.user = user;
         const savedContact = await this.contactRepository.save(dbContact);
         return savedContact;
     }
 
-    async updateContact(uuid: string, createContactInput: ContactInput) {
+    async updateContact(uuid: string, createContactInput: ContactInput, user: User) {
         const { phoneNumber } = createContactInput;
 
         const dbContact = await this.contactRepository.findOne({
             uuid,
-            deleted: false
+            deleted: false,
+            user
         });
 
         if (!dbContact) {
@@ -83,7 +93,8 @@ export class ContactService {
         const contact = await this.contactRepository.findOne({
             phoneNumber,
             uuid: Not(uuid),
-            deleted: false
+            deleted: false,
+            user
         });
 
         if (contact) {
@@ -91,16 +102,18 @@ export class ContactService {
         }
 
         dbContact.phoneNumber = phoneNumber;
+        dbContact.user = user;
         const savedContact = await this.contactRepository.save(dbContact);
         return savedContact;
     }
 
-    async createContact(createContactInput: ContactInput) {
+    async createContact(createContactInput: ContactInput, user: User) {
         const { phoneNumber } = createContactInput;
 
         const contact = await this.contactRepository.findOne({
             phoneNumber,
-            deleted: false
+            deleted: false,
+            user
         });
 
         if (contact) {
@@ -110,6 +123,7 @@ export class ContactService {
         const newContact = new Contact();
 
         newContact.phoneNumber = phoneNumber;
+        newContact.user = user;
 
         const savedContact = await this.contactRepository.save(newContact);
 

@@ -2,12 +2,13 @@ import { DiscoveryService } from "@golevelup/nestjs-discovery";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { PermissionFields } from "../decorators/has-permission.decorator";
+import { GroupName, PermissionFields } from "../decorators/has-permission.decorator";
 import { Permission } from "../entities/permission.entity";
 
 
 @Injectable()
 export class PermissionService {
+    
 
     constructor(
         @InjectRepository(Permission)
@@ -16,6 +17,13 @@ export class PermissionService {
 
     getPermission() {
         throw new Error("Method not implemented.");
+    }
+
+    getPermissionByGroupName(groupName: GroupName) {
+        return this.permissionRepository.find({
+            deleted: false,
+            groupName,
+        });
     }
 
     getAllPermissions() {

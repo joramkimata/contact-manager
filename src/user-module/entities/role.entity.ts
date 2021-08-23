@@ -5,7 +5,7 @@ import { Permission } from "./permission.entity";
 
 @Entity('cm_roles')
 @ObjectType()
-export class Role extends BaseEntity{
+export class Role extends BaseEntity {
 
     @Column()
     @Field()
@@ -18,7 +18,7 @@ export class Role extends BaseEntity{
     @Column({ type: 'text' })
     description: string;
 
-    @Field(type => [Permission])
+    @Field(type => [Permission], { nullable: true })
     @ManyToMany(type => Permission,)
     @JoinTable({
         name: 'cm_role_permissions',

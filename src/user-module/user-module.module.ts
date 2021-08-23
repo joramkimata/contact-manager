@@ -1,25 +1,27 @@
 import { DiscoveryModule, DiscoveryService } from '@golevelup/nestjs-discovery';
-import { Module, OnModuleInit } from '@nestjs/common';
+import { forwardRef, Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModuleModule } from 'src/auth-module/auth-module.module';
+import { SharedModuleModule } from 'src/shared-module/shared-module.module';
 import { Permission } from './entities/permission.entity';
 import { Role } from './entities/role.entity';
 import { User } from './entities/user.entity';
 import { PermissionResolver } from './resolvers/permission.resolver';
 import { RoleResolver } from './resolvers/role.resolver';
 import { UserResolver } from './resolvers/user.resolver';
-import { AuthUserService } from './services/auth-user.service';
 import { PermissionService } from './services/permission.service';
 import { RoleService } from './services/role.service';
 import { UserService } from './services/user.service';
 
 @Module({
     imports: [
+        forwardRef(() => AuthModuleModule),
         DiscoveryModule,
         TypeOrmModule.forFeature([
             User,
             Role,
             Permission
-        ])
+        ]),
     ],
     providers: [
         UserResolver,
@@ -28,10 +30,8 @@ import { UserService } from './services/user.service';
         RoleResolver,
         PermissionService,
         PermissionResolver,
-        AuthUserService
     ],
     exports: [
-        AuthUserService
     ]
 })
 export class UserModuleModule implements OnModuleInit {

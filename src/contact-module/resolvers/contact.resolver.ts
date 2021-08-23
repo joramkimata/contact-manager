@@ -1,17 +1,19 @@
+import { UseGuards } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { GroupName, HasPermission } from "src/user-module/decorators/has-permission.decorator";
+import { PermissionGuard } from "src/auth-module/guards/permission.guard";
 import { Contact } from "../entities/contact.entity";
 import { ContactInput } from "../inputs/contact.input";
 import { ContactService } from "../services/contact.service";
+import { GetCurrentUser } from "src/auth-module/decorators/get-user-graphql.decorator";
+import { User } from "src/user-module/entities/user.entity";
+import { GqlAuthGuard } from "src/auth-module/guards/gql-auth.guard";
 
 
 
-@HasPermission({
-    name: 'ROLE_VIEW_CONTACTS',
-    displayName: 'Can view contacts',
-    groupName: GroupName.CONTACTS
-})
+
 @Resolver(of => Contact)
+@UseGuards(GqlAuthGuard)
 export class ContactResolver {
 
     constructor(
@@ -20,15 +22,22 @@ export class ContactResolver {
 
 
     @HasPermission({
+        name: 'ROLE_VIEW_CONTACTS',
+        displayName: 'Can view contacts',
+        groupName: GroupName.CONTACTS
+    })
+    @UseGuards(PermissionGuard)
+    @HasPermission({
         name: 'ROLE_CREATE_CONTACTS',
         displayName: 'Can create contacts',
         groupName: GroupName.CONTACTS
     })
     @Mutation(returns => Contact)
     createContact(
-        @Args('createContactInput') createContactInput: ContactInput
+        @Args('createContactInput') createContactInput: ContactInput,
+        @GetCurrentUser() user: User
     ) {
-        return this.contactService.createContact(createContactInput);
+        return this.contactService.createContact(createContactInput, user);
     }
 
     @HasPermission({
@@ -36,12 +45,19 @@ export class ContactResolver {
         displayName: 'Can update contacts',
         groupName: GroupName.CONTACTS
     })
+    @HasPermission({
+        name: 'ROLE_VIEW_CONTACTS',
+        displayName: 'Can view contacts',
+        groupName: GroupName.CONTACTS
+    })
+    @UseGuards(PermissionGuard)
     @Mutation(returns => Contact)
     updateContact(
         @Args('uuid') uuid: string,
-        @Args('updateContactInput') updateContactInput: ContactInput
+        @Args('updateContactInput') updateContactInput: ContactInput,
+        @GetCurrentUser() user: User
     ) {
-        return this.contactService.updateContact(uuid, updateContactInput);
+        return this.contactService.updateContact(uuid, updateContactInput, user);
     }
 
     @HasPermission({
@@ -49,11 +65,18 @@ export class ContactResolver {
         displayName: 'Can delete contacts',
         groupName: GroupName.CONTACTS
     })
+    @HasPermission({
+        name: 'ROLE_VIEW_CONTACTS',
+        displayName: 'Can view contacts',
+        groupName: GroupName.CONTACTS
+    })
+    @UseGuards(PermissionGuard)
     @Mutation(returns => Contact)
     deleteContact(
         @Args('uuid') uuid: string,
+        @GetCurrentUser() user: User
     ) {
-        return this.contactService.deleteContact(uuid);
+        return this.contactService.deleteContact(uuid, user);
     }
 
     @HasPermission({
@@ -61,11 +84,18 @@ export class ContactResolver {
         displayName: 'Can make public contacts',
         groupName: GroupName.CONTACTS
     })
+    @HasPermission({
+        name: 'ROLE_VIEW_CONTACTS',
+        displayName: 'Can view contacts',
+        groupName: GroupName.CONTACTS
+    })
+    @UseGuards(PermissionGuard)
     @Mutation(returns => Contact)
     makeContactPublic(
         @Args('uuid') uuid: string,
+        @GetCurrentUser() user: User
     ) {
-        return this.contactService.makeContactPublic(uuid);
+        return this.contactService.makeContactPublic(uuid, user);
     }
 
     // Queries
@@ -75,9 +105,17 @@ export class ContactResolver {
         displayName: 'Can my view contacts',
         groupName: GroupName.CONTACTS
     })
+    @HasPermission({
+        name: 'ROLE_VIEW_CONTACTS',
+        displayName: 'Can view contacts',
+        groupName: GroupName.CONTACTS
+    })
+    @UseGuards(PermissionGuard)
     @Query(returns => [Contact])
-    getMyContacts() {
-        return this.contactService.getMyContacts();
+    getMyContacts(
+        @GetCurrentUser() user: User
+    ) {
+        return this.contactService.getMyContacts(user);
     }   
     
     @HasPermission({
@@ -85,16 +123,17 @@ export class ContactResolver {
         displayName: 'Can view contacts',
         groupName: GroupName.CONTACTS
     })
+    @HasPermission({
+        name: 'ROLE_VIEW_CONTACTS',
+        displayName: 'Can view contacts',
+        groupName: GroupName.CONTACTS
+    })
+    @UseGuards(PermissionGuard)
     @Query(returns => [Contact])
     getAllContacts() {
         return this.contactService.getAllContacts();
     }
 
-    @HasPermission({
-        name: 'ROLE_VIEW_PUBLIC_CONTACTS',
-        displayName: 'Can view public contacts',
-        groupName: GroupName.CONTACTS
-    })
     @Query(returns => [Contact])
     getPublicContacts() {
         return this.contactService.getPublicContacts();
@@ -105,10 +144,17 @@ export class ContactResolver {
         displayName: 'Can view contact',
         groupName: GroupName.CONTACTS
     })
+    @HasPermission({
+        name: 'ROLE_VIEW_CONTACTS',
+        displayName: 'Can view contacts',
+        groupName: GroupName.CONTACTS
+    })
+    @UseGuards(PermissionGuard)
     @Query(returns => Contact, {nullable: true})
     getOneContract(
-        @Args('uuid') uuid: string
+        @Args('uuid') uuid: string,
+        @GetCurrentUser() user: User
     ) {
-        return this.contactService.getOneContract(uuid);
+        return this.contactService.getOneContract(uuid, user);
     }
 }
