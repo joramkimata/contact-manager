@@ -1,0 +1,55 @@
+# Fragments
+
+fragment rolePayload on Role {
+  uuid
+  name
+  displayName
+}
+
+# Get All Roles
+
+query getAllRoles {
+  getRoles {
+    ...rolePayload
+  }
+}
+
+# Get Single Role
+query getSingleRole {
+  getRole(uuid: "") {
+    ...rolePayload
+  }
+}
+
+# Create Role
+
+mutation createRole {
+  createRole(
+    createRoleInput: {
+      name: "NORMAL_USER"
+      displayName: "Normal User"
+      description: "Normal User"
+    }
+  ) {
+    ...rolePayload
+  }
+}
+
+# Get All Permissions
+
+query getAllPermissions {
+  getAllPermissions {
+    uuid
+    name
+  }
+}
+
+# Assign Permissions to Role
+
+mutation assignPermissionsToRole {
+  assignPermissions(
+    assignPermissionInput: { roleUUID: "", permissionUUIDs: ["", ""] }
+  ) {
+    ...rolePayload
+  }
+}

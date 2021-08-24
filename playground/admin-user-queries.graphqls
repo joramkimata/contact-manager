@@ -1,0 +1,89 @@
+# Fragments
+
+fragment userPayload on User {
+  uuid
+  fullName
+  username
+  roles {
+    uuid
+    name
+  }
+}
+
+# Get All User
+
+query getAllUsers {
+  getUsers {
+    ...userPayload
+  }
+}
+
+# Get Single User
+
+query getSingleUser {
+  getUser(uuid: "") {
+    ...userPayload
+  }
+}
+
+# Create User 1
+
+mutation createUser1 {
+  createUser(
+    createUserInput: {
+      fullName: "Suz Doe"
+      username: "suz"
+      password: "suz.2021"
+      confirmPassword: "suz.2020"
+    }
+  ) {
+    ...userPayload
+  }
+}
+
+mutation createUser2 {
+  createUser(
+    createUserInput: {
+      fullName: "Hank Doe"
+      username: "hank"
+      password: "hank.2021"
+      confirmPassword: "hank.2021"
+    }
+  ) {
+    ...userPayload
+  }
+}
+
+# Assign User 1 to Role
+
+mutation assignRolesToUser1 {
+  assignRoles(assignRolesInput: { userUUID: "", roleUUIDs: ["", ""] }) {
+    ...userPayload
+  }
+}
+
+# User Access Monitoring
+
+# Block User
+
+mutation blockUser {
+  blockUser(uuid: "") {
+    ...userPayload
+  }
+}
+
+# Activate User
+
+mutation activateUser {
+  activateUser(uuid: "") {
+    ...userPayload
+  }
+}
+
+# Delete Users
+
+mutation deleteUser {
+  deleteUser(uuid: "") {
+    ...userPayload
+  }
+}

@@ -1,0 +1,17 @@
+# Fragments
+
+fragment contactPayload on Contact {
+  uuid
+  phoneNumber
+  user {
+    uuid
+    fullName
+  }
+}
+
+# Get All Contacts
+query getAllContacts {
+  getAllContacts {
+    ...contactPayload
+  }
+}

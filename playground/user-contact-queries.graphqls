@@ -1,0 +1,90 @@
+# Fragments
+
+fragment contactPayload on Contact {
+  uuid
+  phoneNumber
+  user {
+    uuid
+    fullName
+  }
+}
+
+# Get All Public Contacts
+query getAllPublicContacts {
+  	getPublicContacts {
+      ...contactPayload
+    }
+}
+
+# Create Contact
+
+mutation createContact1 {
+  createContact(createContactInput: {
+    phoneNumber: "+307595867"
+  }) {
+    ...contactPayload
+  }
+}
+
+mutation createContact2 {
+  createContact(createContactInput: {
+    phoneNumber: "+307595837"
+  }) {
+    ...contactPayload
+  }
+}
+
+mutation createContact3 {
+  createContact(createContactInput: {
+    phoneNumber: "+307595837"
+  }) {
+    ...contactPayload
+  }
+}
+
+# Quiz: Create Bulk Contact Creation
+
+# Get My Contacts
+
+query getMyContacts {
+  getMyContacts {
+    ...contactPayload
+  }
+}
+
+# Get Singe Contact
+
+query getSingleContact {
+  getOneContract(uuid: "") {
+    ...contactPayload
+  }
+}
+
+# Make Contact Public
+
+mutation makeContactPublic {
+  makeContactPublic(uuid: "") {
+    ...contactPayload
+  }
+}
+
+# Update Contact Details
+
+mutation updateContact {
+  updateContact(uuid: "", updateContactInput: {
+    phoneNumber: "+44787878",
+  }) {
+    ...contactPayload
+  }
+}
+
+# Delete Contact Details
+# Never delete actual record
+
+mutation deleteContact {
+  deleteContact(uuid: "") {
+    ...contactPayload
+  }
+}
+
+

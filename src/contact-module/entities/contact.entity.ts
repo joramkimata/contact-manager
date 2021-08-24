@@ -16,6 +16,7 @@ export class Contact extends BaseEntity {
     @Column({ name: 'is_public', default: false })
     isPublic: boolean = false;
 
+    @Field(() => User)
     @ManyToOne(() => User, user => user.contacts)
     @JoinColumn({name: 'user_id'})
     user: User;

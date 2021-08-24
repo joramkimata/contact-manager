@@ -10,6 +10,8 @@ import { ContactInput } from "../inputs/contact.input";
 @Injectable()
 export class ContactService {
 
+    private relationsEntities = ['user'];
+
     constructor(
         @InjectRepository(Contact)
         private contactRepository: Repository<Contact>,
@@ -17,9 +19,12 @@ export class ContactService {
 
     async makeContactPublic(uuid: string, user: User) {
         const contact = await this.contactRepository.findOne({
-            uuid,
-            deleted: false,
-            user
+            where: {
+                uuid,
+                deleted: false,
+                user
+            },
+            relations: this.relationsEntities
         });
 
         if(!contact) {
@@ -35,36 +40,51 @@ export class ContactService {
 
     getOneContract(uuid: string, user: User) {
        return this.contactRepository.findOne({
-            uuid,
-            deleted: false,
-            user
+           where: {
+               uuid,
+               deleted: false,
+               user
+           },
+           relations: this.relationsEntities
        }); 
     }
 
     getPublicContacts() {
         return this.contactRepository.find({
-            isPublic: true,
-            deleted: false
+            where: {
+                isPublic: true,
+                deleted: false
+            },
+            relations: this.relationsEntities
         });
     }
 
     getAllContacts() {
         return this.contactRepository.find({
-            deleted: false
+            where: {
+                deleted: false
+            },
+            relations: this.relationsEntities
         });
     }
     getMyContacts(user: User) {
         return this.contactRepository.find({
-            deleted: false,
-            user
+            where: {
+                deleted: false,
+                user
+            },
+            relations: this.relationsEntities
         });
     }
 
     async deleteContact(uuid: string, user: User) {
         const dbContact = await this.contactRepository.findOne({
-            uuid,
-            deleted: false,
-            user
+            where: {
+                uuid,
+                deleted: false,
+                user
+            },
+            relations: this.relationsEntities
         });
 
         if (!dbContact) {
