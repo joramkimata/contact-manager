@@ -1,36 +1,41 @@
-
 version: '3'
 services:
   db:
     restart: always
     image: postgres
     ports:
-     - "5432:5432"
+      - '5436:5432'
     environment:
-     - POSTGRES_PASSWORD=docker
-     - POSTGRES_USER=postgres
-     - POSTGRES_DB=contact_manager
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=contact_manager
     volumes:
-     - pgvolDev:/var/lib/postgresql/data
+      - pgvolDev:/var/lib/postgresql/data
   pgAdmin:
     restart: always
     image: dpage/pgadmin4
     ports:
-     - "8006:80"
+      - '8006:80'
     environment:
-     - PGADMIN_DEFAULT_EMAIL=dev@docker.org
-     - PGADMIN_DEFAULT_PASSWORD=docker
+      - PGADMIN_DEFAULT_EMAIL=dev@docker.org
+      - PGADMIN_DEFAULT_PASSWORD=docker
     volumes:
-     - pgadminDev:/var/lib/pgadmin
+      - pgadminDev:/var/lib/pgadmin
   app:
     restart: always
-    build: .
-    image: contact-manger
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-    - "8030:3000"
+      - '8030:3000'
+    environment:
+      - DB=contact_manager
+      - DB_PASS=docker
+      - DB_USER=postgres
+      - DB_HOST=db
     depends_on:
-    - db
+      - db
 
 volumes:
-    pgvolDev:
-    pgadminDev:
+  pgvolDev:
+  pgadminDev:

@@ -1,12 +1,26 @@
-FROM node
+FROM node:17 AS builder
 
+# Create app directory
 WORKDIR /app
+
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY package*.json ./
+
+# Install app dependencies
+RUN npm install
 
 COPY . .
 
-RUN npm install
+RUN npm run build
 
-RUN npm run start:dev
+FROM node:17
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3000
+CMD [ "npm", "run", "start:prod" ]
 
 # Build as 
 # docker build -t contact-manager .
