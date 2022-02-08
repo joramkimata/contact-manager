@@ -19,7 +19,7 @@ import { GraphQLModule } from '@nestjs/graphql';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: 'db',
       port: 5432,
       username: 'postgres',
       password: 'docker',
@@ -28,12 +28,12 @@ import { GraphQLModule } from '@nestjs/graphql';
       //autoLoadEntities: true, // With that option specified, every entity registered through the forFeature() method will be automatically added to the entities array of the configuration object.
       synchronize: true,
     }),
-    AuthModuleModule, 
-    UserModuleModule, 
+    AuthModuleModule,
+    UserModuleModule,
     ContactModuleModule,
     SharedModuleModule
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
