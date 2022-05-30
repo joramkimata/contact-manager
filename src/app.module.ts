@@ -21,11 +21,11 @@ import { ConfigModule } from '@nestjs/config';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST,
+      host: 'ec2-3-211-221-185.compute-1.amazonaws.com',
       port: 5432,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB,
+      username: 'hpscuwkrdeniuj',
+      password: '56855aac6c630ef4f707b77c292563d48c23f6d877d6a991dafe6769ae135aab',
+      database: 'd7f841652gah1a',
       entities: ["dist/**/**/*.entity{.ts,.js}"],
       //autoLoadEntities: true, // With that option specified, every entity registered through the forFeature() method will be automatically added to the entities array of the configuration object.
       synchronize: true,
