@@ -26,7 +26,10 @@ import { ConfigModule } from '@nestjs/config';
       password: '56855aac6c630ef4f707b77c292563d48c23f6d877d6a991dafe6769ae135aab',
       database: 'd7f841652gah1a',
       entities: ["dist/**/**/*.entity{.ts,.js}"],
-      ssl: true,
+      ssl: {
+        rejectUnauthorized: false
+      },
+
       //autoLoadEntities: true, // With that option specified, every entity registered through the forFeature() method will be automatically added to the entities array of the configuration object.
       synchronize: true,
     }),
