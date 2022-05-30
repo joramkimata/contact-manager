@@ -11,6 +11,8 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     ConfigModule.forRoot(),
     GraphQLModule.forRoot({
+      introspection: true,
+      playground: true,
       autoSchemaFile: true,
       context: ({ req }) => {
         return {
