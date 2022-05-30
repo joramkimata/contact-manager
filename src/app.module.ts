@@ -13,7 +13,6 @@ import { ConfigModule } from '@nestjs/config';
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       context: ({ req }) => {
-
         return {
           req,
         };
